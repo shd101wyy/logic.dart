@@ -282,5 +282,41 @@ void main() {
         {x: "Henry"}
       ]);
     });
+
+    test("case `facts` 3", () {
+      final x = lvar("x");
+      final parent = facts([
+        ["Steve", "Bob"],
+        ["Steve", "Henry"],
+        ["Henry", "Alice"]
+      ]);
+      var grandparent = (x, y) {
+        final z = lvar();
+        return and(parent(x, z), parent(z, y));
+      };
+      expect(run([x], grandparent(x, "Alice")), [
+        {x: "Steve"}
+      ]);
+    });
+  });
+
+  group("Test anyo", () {
+    test("Test case 1", () {
+      final x = lvar("x");
+      expect(run([x], anyo(or(eq(x, 1), eq(x, 2), eq(x, 3))), count: 2), [
+        {x: 1},
+        {x: 2}
+      ]);
+    });
+
+    test("Test case 2", () {
+      final x = lvar("x");
+      expect(run([x], anyo(or(eq(x, 1), eq(x, 2), eq(x, 3))), count: 4), [
+        {x: 1},
+        {x: 2},
+        {x: 3},
+        {x: 1}
+      ]);
+    });
   });
 }

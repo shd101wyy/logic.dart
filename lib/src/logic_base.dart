@@ -512,3 +512,9 @@ Function facts(List<List<dynamic>> facs) {
   Function helper = Variadic(_helper) as Function;
   return helper;
 }
+
+LogicGeneratorFunction anyo(goal) {
+  return or(goal, () {
+    return anyo(goal);
+  });
+}
