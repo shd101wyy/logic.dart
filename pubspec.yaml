@@ -1,6 +1,6 @@
 name: logic
-description: A starting point for Dart libraries or applications.
-version: 0.0.1
+description: Minikanren implemented in dart language based on github:@shd101wyy/logic.js repository.
+version: 0.0.2
 homepage: https://github.com/shd101wyy/logic.dart
 author: Yiyi Wang <shd101wyy@gmail.com>
 
