@@ -86,47 +86,41 @@ void main() {
 
     test("case 2", () {
       final x = lvar("x");
-      expect(run([x], eq(x, 1)), [{x: 1}]);
-    }); 
+      expect(run([x], eq(x, 1)), [
+        {x: 1}
+      ]);
+    });
   });
 
   group("Test run and", () {
     test("case 1", () {
       final x = lvar("x");
       final y = lvar();
-      expect(run([x], and(
-        eq(x, y),
-        eq(y, 1)
-      )), [{x: 1}]);
+      expect(run([x], and(eq(x, y), eq(y, 1))), [
+        {x: 1}
+      ]);
     });
   });
-
 
   group("Test run or", () {
     test("case 1", () {
       final x = lvar("x");
-      expect(run([x], or(
-        eq(x, 1),
-        eq(x, 2)
-      )), [{x: 1}, {x: 2}]);
+      expect(run([x], or(eq(x, 1), eq(x, 2))), [
+        {x: 1},
+        {x: 2}
+      ]);
     });
 
     test("case 2", () {
       final x = lvar("x");
-      expect(run([x], or(
-        eq(x, 1),
-        eq(x, 2),
-        count: 1
-      )), [{x: 1}]);
+      expect(run([x], or(eq(x, 1), eq(x, 2), count: 1)), [
+        {x: 1}
+      ]);
     });
 
     test("case 3", () {
       final x = lvar("x");
-      expect(run([x], or(
-        eq(x, 1),
-        eq(x, 2),
-        count: 0
-      )), []);
+      expect(run([x], or(eq(x, 1), eq(x, 2), count: 0)), []);
     });
   });
 
@@ -134,54 +128,92 @@ void main() {
     test("case `conso` 1", () {
       final x = lvar("x");
       final y = lvar("y");
-      expect(run([x, y], conso(x, y, [1, 2, 3])), [{x: 1, y: [2, 3]}]);
+      expect(run([x, y], conso(x, y, [1, 2, 3])), [
+        {
+          x: 1,
+          y: [2, 3]
+        }
+      ]);
     });
 
     test("case `firsto` 1", () {
       final x = lvar("x");
-      expect(run([x], firsto(x, [3, 4, 5])), [{x: 3}]);
+      expect(run([x], firsto(x, [3, 4, 5])), [
+        {x: 3}
+      ]);
     });
 
     test("case `resto` 1", () {
       final x = lvar("x");
-      expect(run([x], resto(x, [1, 2, 3, 4])), [{x: [2, 3, 4]}]);
+      expect(run([x], resto(x, [1, 2, 3, 4])), [
+        {
+          x: [2, 3, 4]
+        }
+      ]);
     });
 
     test("case `emptyo` 1", () {
       final x = lvar("x");
-      expect(run([x], emptyo(x)), [{x: []}]);
+      expect(run([x], emptyo(x)), [
+        {x: []}
+      ]);
     });
 
     test("case `membero` 1", () {
       final x = lvar("x");
-      expect(run([x], membero(x, [1, 2, 3])), [{x: 1}, {x: 2}, {x: 3}]);
+      expect(run([x], membero(x, [1, 2, 3])), [
+        {x: 1},
+        {x: 2},
+        {x: 3}
+      ]);
     });
 
     test("case `appendo` 1", () {
       final x = lvar("x");
       final y = lvar("y");
-      expect(run([x, y], appendo(x, y, [1, 2])), [{x: [], y: [1, 2]}, {x: [1], y: [2]}, {x: [1, 2], y: []}]);
-    });  
+      expect(run([x, y], appendo(x, y, [1, 2])), [
+        {
+          x: [],
+          y: [1, 2]
+        },
+        {
+          x: [1],
+          y: [2]
+        },
+        {
+          x: [1, 2],
+          y: []
+        }
+      ]);
+    });
   });
 
   group("Test arithmatics", () {
     test("case `add` 1", () {
       final x = lvar("x");
-      expect(run([x], add(x, 3, 5)), [{x: 2}]);
+      expect(run([x], add(x, 3, 5)), [
+        {x: 2}
+      ]);
     });
     test("case `add` 2", () {
       final x = lvar("x");
-      expect(run([x], add(2, x, 5)), [{x: 3}]);
+      expect(run([x], add(2, x, 5)), [
+        {x: 3}
+      ]);
     });
 
     test("case `add` 3", () {
       final x = lvar("x");
-      expect(run([x], add(2, 3, x)), [{x: 5}]);
+      expect(run([x], add(2, 3, x)), [
+        {x: 5}
+      ]);
     });
 
     test("case `add` 4", () {
       final x = lvar("x");
-      expect(run([x], add(2, 3, 5)), [{x: x}]);
+      expect(run([x], add(2, 3, 5)), [
+        {x: x}
+      ]);
     });
 
     test("case `add` 5", () {
@@ -191,17 +223,64 @@ void main() {
 
     test("case `sub` 1", () {
       final x = lvar("x");
-      expect(run([x], sub(x, 3, 5)), [{x: 8}]);
-    }); 
+      expect(run([x], sub(x, 3, 5)), [
+        {x: 8}
+      ]);
+    });
 
     test("case `mul` 1", () {
       final x = lvar("x");
-      expect(run([x], mul(6, x, 12)), [{x: 2}]);
-    }); 
+      expect(run([x], mul(6, x, 12)), [
+        {x: 2}
+      ]);
+    });
 
     test("case `div` 1", () {
       final x = lvar("x");
-      expect(run([x], div(x, 3, 5)), [{x: 15}]);
-    }); 
+      expect(run([x], div(x, 3, 5)), [
+        {x: 15}
+      ]);
+    });
+  });
+
+  group("Test comparison", () {
+    test("case `lt` 1", () {
+      final x = lvar("x");
+      expect(run([x], lt(3, 5)), [
+        {x: x}
+      ]);
+    });
+
+    test("case `lt` 2", () {
+      final x = lvar("x");
+      expect(run([x], lt(5, 3)), []);
+    });
+  });
+
+  group("Test facts and rules", () {
+    test("case `facts` 1", () {
+      final x = lvar("x");
+      final parent = facts([
+        ["Steve", "Bob"],
+        ["Steve", "Henry"],
+        ["Henry", "Alice"]
+      ]);
+      expect(run([x], parent(x, "Alice")), [
+        {x: "Henry"}
+      ]);
+    });
+
+    test("case `facts` 2", () {
+      final x = lvar("x");
+      final parent = facts([
+        ["Steve", "Bob"],
+        ["Steve", "Henry"],
+        ["Henry", "Alice"]
+      ]);
+      expect(run([x], parent("Steve", x)), [
+        {x: "Bob"},
+        {x: "Henry"}
+      ]);
+    });
   });
 }

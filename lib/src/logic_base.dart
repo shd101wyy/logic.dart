@@ -369,7 +369,6 @@ LogicGeneratorFunction add(a, b, c) {
   return add_;
 }
 
-
 /// a - b = c
 LogicGeneratorFunction sub(a, b, c) => add(b, c, a);
 
@@ -437,3 +436,79 @@ LogicGeneratorFunction mul(a, b, c) {
 
 /// a / b = c
 LogicGeneratorFunction div(a, b, c) => mul(b, c, a);
+
+LogicGeneratorFunction lt(x, y) {
+  return (sMap) sync* {
+    x = walk(x, sMap);
+    y = walk(y, sMap);
+    if (x is num && y is num && x < y) {
+      yield sMap;
+    } else {
+      yield null;
+    }
+  };
+}
+
+LogicGeneratorFunction le(x, y) {
+  return (sMap) sync* {
+    x = walk(x, sMap);
+    y = walk(y, sMap);
+    if (x is num && y is num && x <= y) {
+      yield sMap;
+    } else {
+      yield null;
+    }
+  };
+}
+
+LogicGeneratorFunction gt(x, y) => lt(y, x);
+LogicGeneratorFunction ge(x, y) => le(y, x);
+
+LogicGeneratorFunction stringo(x) {
+  return (sMap) sync* {
+    final val = walk(x, sMap);
+    if (val is String) {
+      yield sMap;
+    } else {
+      yield null;
+    }
+  };
+}
+
+LogicGeneratorFunction numbero(x) {
+  return (sMap) sync* {
+    final val = walk(x, sMap);
+    if (val is num) {
+      yield sMap;
+    } else {
+      yield null;
+    }
+  };
+}
+
+LogicGeneratorFunction arrayo(x) {
+  return (sMap) sync* {
+    final val = walk(x, sMap);
+    if (val is List) {
+      yield sMap;
+    } else {
+      yield null;
+    }
+  };
+}
+
+Function facts(List<List<dynamic>> facs) {
+  LogicGeneratorFunction _helper(
+      List<dynamic> args, Map<Symbol, dynamic> named) {
+    return _or(
+        facs.map((fac) {
+          var _arr = [];
+          fac.asMap().forEach((i, facArg) => _arr.add(eq(facArg, args[i])));
+          return _and(_arr, named);
+        }).toList(),
+        named);
+  }
+
+  Function helper = Variadic(_helper) as Function;
+  return helper;
+}
