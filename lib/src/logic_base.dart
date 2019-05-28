@@ -6,7 +6,29 @@ class Awesome {
 }
 
 // Generator Function type
-typedef LogicGeneratorFunction = Iterable<BuiltMap<Object, Object>> Function(BuiltMap<Object, Object>);
+typedef LogicGeneratorFunction = Iterable<BuiltMap<Object, Object>> Function(
+    BuiltMap<Object, Object>);
+
+typedef LogicGeneratorFunction ApplyType(List<dynamic> positionalArguments, Map<Symbol, dynamic> namedArguments);
+
+class Variadic extends Function {
+  final ApplyType _apply;
+
+  Variadic(this._apply);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #call) {
+      if (invocation.isMethod) {
+        return this._apply(invocation.positionalArguments, invocation.namedArguments);
+      }
+      if (invocation.isGetter) {
+        return this;
+      }
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
 
 // Logic Variable
 class LVar {
@@ -19,7 +41,7 @@ class LVar {
 }
 
 int lvarCounter = 0; // global counter
-LVar lvar(String id) {
+LVar lvar([String id]) {
   if (id == null) {
     id = "~.${lvarCounter}";
     lvarCounter++;
@@ -126,12 +148,96 @@ LogicGeneratorFunction eq(Object x, Object y) {
   return eq_;
 }
 
-List<Map> run(List<LVar> vars, Function goal, {int count = -1}) {
+LogicGeneratorFunction _and(List<dynamic> goals, Map<Symbol, dynamic> named) {
+  Iterable<BuiltMap<Object, Object>> __and(
+      BuiltMap<Object, Object> sMap) sync* {
+    Iterable<BuiltMap<Object, Object>> helper(
+        int offset, BuiltMap<Object, Object> sMap) sync* {
+      if (offset == goals.length) {
+        return;
+      }
+      var goal = goals[offset];
+      LogicGeneratorFunction goalGenerator;
+      if (goal.runtimeType != LogicGeneratorFunction) {
+        goalGenerator = goal();
+      } else {
+        goalGenerator = goal;
+      }
+      var iteratorSMap = goalGenerator(sMap).iterator;
+      while (true) {
+        bool done = !(iteratorSMap.moveNext());
+        var sMap = iteratorSMap.current;
+        if (done) {
+          break;
+        }
+        if (sMap != null) {
+          if (offset == goals.length - 1) {
+            yield sMap;
+          } else {
+            yield* helper(offset + 1, sMap);
+          }
+        } else {
+          // error
+          yield null;
+        }
+      }
+    }
+
+    yield* helper(0, sMap);
+  }
+
+  return __and;
+}
+
+Function and = Variadic(_and) as Function;
+
+LogicGeneratorFunction _or(List<dynamic> goals, Map<Symbol, dynamic> named) {
+  int count = named[Symbol("count")] ?? -1;
+  Iterable<BuiltMap<Object, Object>> __or(BuiltMap<Object, Object> sMap) sync* {
+    Iterable<BuiltMap<Object, Object>> helper(
+        int offset, BuiltMap<Object, Object> sMap, int solNum) sync* {
+      if (offset == goals.length || count == 0) {
+        return;
+      }
+      var goal = goals[offset];
+      LogicGeneratorFunction goalGenerator;
+      if (goal.runtimeType != LogicGeneratorFunction) {
+        goalGenerator = goal();
+      } else {
+        goalGenerator = goal;
+      }
+      var iteratorSMap = goalGenerator(sMap).iterator;
+      while (true) {
+        bool done = !(iteratorSMap.moveNext());
+        var sMap = iteratorSMap.current;
+        if (done) {
+          break;
+        }
+        if (sMap != null) {
+          yield sMap;
+          solNum += 1;
+          if (count > 0 && solNum >= count) {
+            return;
+          }
+        }
+      }
+      yield* helper(offset + 1, sMap, solNum);
+    }
+
+    yield* helper(0, sMap, 0);
+  }
+
+  return __or;
+}
+
+Function or = Variadic(_or) as Function;
+
+List<Map> run(List<LVar> vars, Object goal, {int count = -1}) {
   lvarCounter = 0; // reset counter
 
   LogicGeneratorFunction goalGenerator;
   if (goal.runtimeType != LogicGeneratorFunction) {
-    goalGenerator = goal();
+    goalGenerator = (goal as Function)();
   } else {
     goalGenerator = goal;
   }
