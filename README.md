@@ -110,7 +110,7 @@ run([x], anyo(or(eq(x, 1), eq(x, 2), eq(x, 3))), count: 4);
 
 I encountered a few problems while rewriting the logic.js to logic.dart.
 
-* The **dart** language doesn't support variadic parameters in function. So I kinda *hacked* the `and` and `or` functions.
+* The **dart** language doesn't support variadic functions. So I *hacked* the `and` and `or` functions. [#16253](https://github.com/dart-lang/sdk/issues/16253).
 
 * ...
 
