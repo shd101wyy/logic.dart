@@ -5,6 +5,9 @@ class Awesome {
   bool get isAwesome => true;
 }
 
+// Generator Function type
+typedef LogicGeneratorFunction = Iterable<BuiltMap<Object, Object>> Function(BuiltMap<Object, Object>);
+
 // Logic Variable
 class LVar {
   String id;
@@ -97,7 +100,7 @@ BuiltMap<Object, Object> unifyArray(
   }
 }
 
-Function succeed() {
+LogicGeneratorFunction succeed() {
   Iterable<BuiltMap<Object, Object>> succeed_(
       BuiltMap<Object, Object> sMap) sync* {
     yield sMap;
@@ -106,7 +109,7 @@ Function succeed() {
   return succeed_;
 }
 
-Function fail() {
+LogicGeneratorFunction fail() {
   Iterable<BuiltMap<Object, Object>> fail_(
       BuiltMap<Object, Object> sMap) sync* {
     yield null;
@@ -115,10 +118,39 @@ Function fail() {
   return fail_;
 }
 
-Function eq(Object x, Object y) {
+LogicGeneratorFunction eq(Object x, Object y) {
   Iterable<BuiltMap<Object, Object>> eq_(BuiltMap<Object, Object> sMap) sync* {
     yield unify(x, y, sMap);
   }
 
   return eq_;
+}
+
+List<Map> run(List<LVar> vars, Function goal, {int count = -1}) {
+  lvarCounter = 0; // reset counter
+
+  LogicGeneratorFunction goalGenerator;
+  if (goal.runtimeType != LogicGeneratorFunction) {
+    goalGenerator = goal();
+  } else {
+    goalGenerator = goal;
+  }
+
+  List<Map> results = [];
+  var sMap = BuiltMap<Object, Object>();
+  var iteratorSMap = goalGenerator(sMap).iterator;
+  while (count != 0) {
+    bool done = !(iteratorSMap.moveNext());
+    sMap = iteratorSMap.current;
+    if (done) {
+      break;
+    }
+    if (sMap != null) {
+      count--;
+      var r = {};
+      vars.forEach((v) => r[v] = deepwalk(v, sMap));
+      results.add(r);
+    }
+  }
+  return results;
 }

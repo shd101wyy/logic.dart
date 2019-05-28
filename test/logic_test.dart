@@ -78,4 +78,15 @@ void main() {
       expect(unify(m, x, sMap), targetSMap);
     });
   });
+
+  group("Test run function", () {
+    test('case 1', () {
+      expect(succeed().runtimeType, LogicGeneratorFunction);
+    });
+
+    test('case 2', () {
+      var x = LVar("x");
+      expect(run([x], eq(x, 1)), [{x: 1}]);
+    }); 
+  });
 }
