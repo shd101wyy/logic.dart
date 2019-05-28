@@ -20,8 +20,8 @@ main() {
   final parent = facts([
     ['Steve', 'Bob'],      // Steve is Bob's parent
     ['Steve', 'Henry'],    // Steve is Henry's parent
-    ['Henry', 'Alice']
-  ]);    // Henry is Alice's parent
+    ['Henry', 'Alice']     // Henry is Alice's parent
+  ]);
   run([x], parent(x, 'Alice'));     // who is Alice's parent => ['Henry']
   run([x], parent('Steve', x));     // who are Steve's children => ['Bob', 'Henry']
 
