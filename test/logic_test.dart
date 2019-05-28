@@ -1,31 +1,42 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:logic/logic.dart';
+import 'package:logic/logic.dart' as logic;
 import 'package:test/test.dart';
 
+final LogicGeneratorFunction = logic.LogicGeneratorFunction;
+final lvar = logic.lvar;
+final walk = logic.walk;
+final unify = logic.unify;
+final run = logic.run;
+final eq = logic.eq;
+final and = logic.and;
+final or = logic.or;
+final firsto = logic.firsto;
+final resto = logic.resto;
+final conso = logic.conso;
+final emptyo = logic.emptyo;
+final membero = logic.membero;
+final appendo = logic.appendo;
+final add = logic.add;
+final sub = logic.sub;
+final mul = logic.mul;
+final div = logic.div;
+final lt = logic.lt;
+final facts = logic.facts;
+final anyo = logic.anyo;
+final succeed = logic.succeed;
+
 void main() {
-  group('A group of tests', () {
-    Awesome awesome;
-
-    setUp(() {
-      awesome = Awesome();
-    });
-
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
-    });
-  });
-
   group("Test walk function", () {
     test('case 1', () {
-      var x = lvar("x");
-      var sMap = BuiltMap<Object, Object>({x: 12});
+      final x = lvar("x");
+      final sMap = BuiltMap<Object, Object>({x: 12});
       expect(walk(x, sMap), 12);
     });
 
     test('case 2', () {
-      var x = lvar("x");
-      var y = lvar("y");
-      var sMap = BuiltMap<Object, Object>({x: y});
+      final x = lvar("x");
+      final y = lvar("y");
+      final sMap = BuiltMap<Object, Object>({x: y});
       expect(walk(x, sMap), y);
     });
 
@@ -46,9 +57,9 @@ void main() {
 
   group("Test unify function", () {
     test('case 1', () {
-      var sMap = BuiltMap<Object, Object>();
-      var x = lvar("x");
-      var targetSMap = BuiltMap<Object, Object>({x: 12});
+      final sMap = BuiltMap<Object, Object>();
+      final x = lvar("x");
+      final targetSMap = BuiltMap<Object, Object>({x: 12});
       expect(unify(x, 12, sMap), targetSMap);
     });
 
@@ -61,20 +72,20 @@ void main() {
     });
 
     test('case 3', () {
-      var x = lvar("x");
-      var m = lvar("m");
-      var n = lvar("n");
-      var sMap = BuiltMap<Object, Object>({x: 12, m: n});
-      var targetSMap = BuiltMap<Object, Object>({x: 12, m: n, n: 12});
+      final x = lvar("x");
+      final m = lvar("m");
+      final n = lvar("n");
+      final sMap = BuiltMap<Object, Object>({x: 12, m: n});
+      final targetSMap = BuiltMap<Object, Object>({x: 12, m: n, n: 12});
       expect(unify(x, m, sMap), targetSMap);
     });
 
     test('case 4', () {
-      var x = lvar("x");
-      var m = lvar("m");
-      var n = lvar("n");
-      var sMap = BuiltMap<Object, Object>({x: 12, m: n});
-      var targetSMap = BuiltMap<Object, Object>({x: 12, m: n, n: 12});
+      final x = lvar("x");
+      final m = lvar("m");
+      final n = lvar("n");
+      final sMap = BuiltMap<Object, Object>({x: 12, m: n});
+      final targetSMap = BuiltMap<Object, Object>({x: 12, m: n, n: 12});
       expect(unify(m, x, sMap), targetSMap);
     });
   });
@@ -119,6 +130,13 @@ void main() {
     });
 
     test("case 3", () {
+      final x = lvar("x");
+      expect(run([x], or(eq(x, 1), eq(x, 2)), count: 1), [
+        {x: 1}
+      ]);
+    });
+
+    test("case 4", () {
       final x = lvar("x");
       expect(run([x], or(eq(x, 1), eq(x, 2), count: 0)), []);
     });
@@ -300,8 +318,8 @@ void main() {
     });
   });
 
-  group("Test anyo", () {
-    test("Test case 1", () {
+  group("Test extra", () {
+    test("Test `anyo` case 1", () {
       final x = lvar("x");
       expect(run([x], anyo(or(eq(x, 1), eq(x, 2), eq(x, 3))), count: 2), [
         {x: 1},
@@ -309,13 +327,33 @@ void main() {
       ]);
     });
 
-    test("Test case 2", () {
+    test("Test `anyo` case 2", () {
       final x = lvar("x");
       expect(run([x], anyo(or(eq(x, 1), eq(x, 2), eq(x, 3))), count: 4), [
         {x: 1},
         {x: 2},
         {x: 3},
         {x: 1}
+      ]);
+    });
+
+    test("Test `succeed` case 1", () {
+      final x = lvar("x");
+      expect(run([x], and(eq(x, 1), succeed())), [
+        {x: 1}
+      ]);
+    });
+
+    test("Test `fail` case 1", () {
+      final x = lvar("x");
+      expect(run([x], and(eq(x, 1), logic.fail())), []);
+    });
+
+    test("Test combined case 1", () {
+      final x = lvar("x");
+      expect(run([x], or(eq(x, 1), and(eq(x, 2), logic.fail()), eq(x, 3))), [
+        {x: 1},
+        {x: 3}
       ]);
     });
   });

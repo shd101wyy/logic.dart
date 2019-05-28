@@ -1,10 +1,5 @@
 import "package:built_collection/built_collection.dart";
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
-}
-
 // Generator Function type
 typedef LogicGeneratorFunction = Iterable<BuiltMap<Object, Object>> Function(
     BuiltMap<Object, Object>);

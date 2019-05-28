@@ -1,8 +1,8 @@
 name: logic
 description: A starting point for Dart libraries or applications.
-# version: 1.0.0
-# homepage: https://www.example.com
-# author: Yiyi Wang <shd101wyy@gmail.com>
+version: 0.0.1
+homepage: https://github.com/shd101wyy/logic.dart
+author: Yiyi Wang <shd101wyy@gmail.com>
 
 environment:
   sdk: '>=2.2.2 <3.0.0'
